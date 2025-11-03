@@ -64,6 +64,16 @@ namespace semc {
     public:
         Window(int width, int height, const std::string& title) : window(width, height, title.c_str()) {
             root = new Node();
+            
+        }
+        ~Window() {
+            if (root) {
+                delete root;
+                root = nullptr;
+            }
+            window.Close();
+        }
+        void run() {
             SetTargetFPS(60);
             while (!window.ShouldClose()) {
                 float delta = GetFrameTime();
@@ -74,39 +84,38 @@ namespace semc {
                 window.EndDrawing();
             }
         }
-        ~Window() {
-            if (root) {
-                delete root;
-                root = nullptr;
-            }
-            window.Close();
-        }
         Node* get_root() { return root; }
-        // void start() {
-
-        // }
     };
 
-    class TextNode : public Node {
+    class Base2DNode : public Node {
+    public:
+        RVector2 position = RVector2::Zero();
+        RVector2 scale = RVector2::One();
+        float rotation = 0.0f;
+        Base2DNode() : Node("Base2DNode") {}
+        Base2DNode(const std::string& name) : Node(name) {}
+    };
+
+    class TextNode : public Base2DNode {
     private:
+        RText textObj;
+    public:
         std::string text;
-        RColor color = RAYWHITE;
-        RColor outline = RAYWHITE;
+        RColor color = RColor::White();
+        RColor outlineColor = RColor::Blue();
         RFont font = GetFontDefault();
         int fontSize = 20;
         int outlineSize = 0;
-    public:
-    TextNode(const std::string& text) : text(text) {
-        
-    };
-    TextNode(const std::string& text, const RColor& color, int fontSize = 20, const RColor& outline = RAYWHITE, int outlineSize = 0)
-        : text(text), color(color), fontSize(fontSize), outline(outline), outlineSize(outlineSize) {};
-    void _process(float delta) override {
-        // font.DrawText(text.c_str(), 10, 10, fontSize, color);
-        // if (outlineSize > 0) {
-        //     font.DrawText(text.c_str(), 10, 10, fontSize + outlineSize, outline);
-        // }
-    };
+
+        TextNode(const std::string& text) : text(text) {};
+        void _process(float delta) override {
+            textObj.SetFont(font);
+            if(outlineSize > 0) {
+                textObj.Draw(text, position.x - outlineSize, position.y - outlineSize, fontSize, outlineColor);
+            }
+            textObj.Draw(text, position, fontSize, color);
+        };
+
 
 };
 };

@@ -14,7 +14,12 @@ by Jeffery Myers is marked with CC0 1.0. To view a copy of this license, visit h
 int main ()
 {
 	SWindow window(1280, 800, "Hello Raylib");
-	window.get_root()->add_child(new STextNode("Hello World!"));
+	STextNode textNode("Hello World!");
+	textNode.position = RVector2(100, 100);
+	// textNode.outlineSize = 2;
+	window.get_root()->add_child(&textNode);
+
+	window.run();
 	// std::cout << "Starting main loop" << std::endl;
 	
 	return 0;
